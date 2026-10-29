@@ -26,10 +26,10 @@ const convertKeysToCamelCase = (input) => {
 };
 
 const fetchRepository = async ({ queryKey }) => {
-  const [_key, searchInput, repoName] = queryKey;
+  const [, searchInput, repoName] = queryKey;
 
   const response = await fetch(
-    `/api/repoDetails?username=${searchInput}&repoName=${repoName}`,
+    `/api/repoDetails?username=${encodeURIComponent(searchInput)}&repoName=${encodeURIComponent(repoName)}`,
   );
 
   if (!response.ok) {
@@ -53,6 +53,7 @@ const RepositoryItemDetails = () => {
     queryKey: ["repoDetails", searchInput, repoName],
     queryFn: fetchRepository,
     enabled: !!searchInput && !!repoName,
+    staleTime: 5 * 60 * 1000,
   });
 
   // 🔄 Loading
@@ -81,10 +82,8 @@ const RepositoryItemDetails = () => {
     );
   }
 
-
   if (!itemDetails) return null;
 
-  
   const contributorsLength = itemDetails.contributors.length;
   const contributorsToShow = 5;
   const remainingContributors = contributorsLength - contributorsToShow;
